@@ -45,4 +45,4 @@ I also intentionally treat post-hook failure as non-fatal to the already-success
 
 Would you be interested in incorporating this type of hook, and if so, what contribution format would you prefer for the actual source tree?
 
-Repository: <PASTE YOUR REPOSITORY URL HERE>
+Repository: https://github.com/GlitchMode/cloudpanel-firewall-post-hooks
