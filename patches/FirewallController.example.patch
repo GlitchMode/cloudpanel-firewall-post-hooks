@@ -1,0 +1,35 @@
+--- a/src/Controller/Admin/FirewallController.php
++++ b/src/Controller/Admin/FirewallController.php
+@@
+ use App\Ufw\Firewall as UfwFirewall;
++use App\Firewall\PostApplyHookRunner;
+@@
+ private function setUfwFirewallRules(FirewallRuleManager $firewallRuleManager): void
+ {
+     $firewallRules = $firewallRuleManager->findAll();
+     $ufwFirewall = new UfwFirewall();
+
+     $ufwFirewall->reset();
+
+     if (count($firewallRules)) {
+         foreach ($firewallRules as $firewallRule) {
+             $portRange = implode(':', explode('-', $firewallRule->getPortRange()));
+             $ufwFirewall->allowTcpRule($firewallRule->getSource(), $portRange);
+         }
+
+         $ufwFirewall->allowUdpRule('0.0.0.0/0', 443);
+         $ufwFirewall->allowUdpRule('::/0', 443);
+         $ufwFirewall->enable();
++
++        $postApplyHookRunner = new PostApplyHookRunner();
++        $postApplyHookRunner->run();
+     } else {
+         $ufwFirewall->disable();
+     }
+ }
+
+# NOTE:
+# This patch is illustrative. The installed CloudPanel application is distributed
+# in transformed/obfuscated form, so line-for-line source will differ by release.
+# The intended integration point is immediately after the successful final
+# UfwFirewall::enable() call in FirewallController::setUfwFirewallRules().
